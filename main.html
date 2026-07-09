@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>연애상담 챗봇</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#f5f5f5;
+}
+
+#chat{
+    width:500px;
+    margin:30px auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    height:500px;
+    overflow:auto;
+}
+
+.user{
+    text-align:right;
+    margin:10px;
+    color:blue;
+}
+
+.bot{
+    text-align:left;
+    margin:10px;
+    color:green;
+}
+
+.input{
+    width:500px;
+    margin:auto;
+    display:flex;
+}
+
+input{
+    flex:1;
+    padding:10px;
+}
+
+button{
+    padding:10px 20px;
+}
+</style>
+
+</head>
+<body>
+
+<div id="chat">
+<div class="bot">안녕하세요. 연애상담 챗봇입니다.</div>
+</div>
+
+<div class="input">
+<input id="msg" placeholder="질문을 입력하세요">
+<button onclick="send()">전송</button>
+</div>
+
+<script>
+
+let qa=[];
+
+// CSV 불러오기
+fetch("love_data.csv")
+.then(res=>res.text())
+.then(text=>{
+
+const lines=text.trim().split("\n");
+
+for(let i=1;i<lines.length;i++){
+
+const row=lines[i].split(",");
+
+qa.push({
+question:row[0].trim(),
+answer:row[1].trim()
+});
+
+}
+
+console.log(qa);
+
+});
+
+function add(text,type){
+
+const div=document.createElement("div");
+div.className=type;
+div.innerHTML=text;
+
+document.getElementById("chat").appendChild(div);
+
+document.getElementById("chat").scrollTop=
+document.getElementById("chat").scrollHeight;
+
+}
+
+function send(){
+
+const input=document.getElementById("msg");
+
+const msg=input.value.trim();
+
+if(msg=="") return;
+
+add(msg,"user");
+
+input.value="";
+
+let found=false;
+
+for(let item of qa){
+
+if(msg.includes(item.question)){
+
+add(item.answer,"bot");
+
+found=true;
+
+break;
+
+}
+
+}
+
+if(!found){
+
+add("죄송해요. 아직 준비되지 않은 질문입니다.","bot");
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
